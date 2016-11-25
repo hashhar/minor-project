@@ -67,6 +67,10 @@
       <Project>{F7F28E38-3BCD-4401-B161-3F8F0BE5E240}</Project>
       <Name>FeatureExtractor</Name>
     </ProjectReference>
+    <ProjectReference Include="..\WebApiClient\WebApiClient.csproj">
+      <Project>{3B69AAE7-85AE-46CB-8238-F44501528249}</Project>
+      <Name>WebApiClient</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

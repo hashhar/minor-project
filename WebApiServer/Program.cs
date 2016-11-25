@@ -8,15 +8,10 @@ using System.Text;
 using EditCorrector;
 using FeatureExtractor;
 using FeatureExtractor.Abstract;
+using WebApiClient;
 
 namespace WebApiServer
 {
-	public class dataModel
-	{
-		public string Sentence { get; set; }
-		public Dictionary<int, string> Corrections { get; set; }
-	}
-
 	public class WebApiServer
 	{
 		private static readonly string SolutionPath = ContextSensitiveSpellingCorrection.ContextSensitiveSpellingCorrection.SolutionPath;
@@ -48,11 +43,9 @@ namespace WebApiServer
 					var jsonObj = new dataModel();
 					jsonObj.Sentence = inputLine;
 					jsonObj.Corrections = wordsList;
-					var _data = new List<dataModel>();
-					_data.Add(jsonObj);
-					string json = JsonConvert.SerializeObject(_data.ToArray());
-					writer.WriteLine("Corrections: " + json);
-					Console.WriteLine("Corrections: " + json);
+					string json = JsonConvert.SerializeObject(jsonObj);
+					writer.WriteLine(json);
+					Console.WriteLine("\nCorrections: " + json);
 				}
 				Console.WriteLine("Server saw disconnect from client.");
 			}
