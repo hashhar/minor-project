@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace WebApiClient
+namespace WebApiServer
 {
-		public class dataModel
+		public class DataModel
 		{
 			public string Sentence { get; set; }
 			public Dictionary<int, string> Corrections { get; set; }

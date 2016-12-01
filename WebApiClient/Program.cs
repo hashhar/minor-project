@@ -2,6 +2,7 @@
 using System.IO;
 using System.Net.Sockets;
 using Newtonsoft.Json;
+using WebApiServer;
 
 namespace WebApiClient
 {
@@ -24,7 +25,7 @@ namespace WebApiClient
 				Console.WriteLine("Sending to server: " + lineToSend);
 				writer.WriteLine(lineToSend);
 				string lineReceived = reader.ReadLine();
-				var jsonObj = JsonConvert.DeserializeObject<dataModel>(lineReceived);
+				var jsonObj = JsonConvert.DeserializeObject<DataModel>(lineReceived);
 				var jsonString = JsonConvert.SerializeObject(jsonObj, Formatting.Indented);
 				Console.Write("\nReceived from server: " + jsonString + "\n\n");
 			}

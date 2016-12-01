@@ -8,7 +8,6 @@ using System.Text;
 using EditCorrector;
 using FeatureExtractor;
 using FeatureExtractor.Abstract;
-using WebApiClient;
 
 namespace WebApiServer
 {
@@ -40,7 +39,7 @@ namespace WebApiServer
 					var testSentence = inputLine;
 					Dictionary<int, string> wordsList = contextSensitiveSpellingCorrection.Predict(testSentence);
 					var outLine = "";
-					var jsonObj = new dataModel();
+					var jsonObj = new DataModel();
 					jsonObj.Sentence = inputLine;
 					jsonObj.Corrections = wordsList;
 					string json = JsonConvert.SerializeObject(jsonObj);
