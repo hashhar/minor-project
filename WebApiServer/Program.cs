@@ -38,7 +38,6 @@ namespace WebApiServer
 					inputLine = reader.ReadLine();
 					var testSentence = inputLine;
 					Dictionary<int, string> wordsList = contextSensitiveSpellingCorrection.Predict(testSentence);
-					var outLine = "";
 					var jsonObj = new DataModel();
 					jsonObj.Sentence = inputLine;
 					jsonObj.Corrections = wordsList;
@@ -63,7 +62,7 @@ namespace WebApiServer
 			var confusionSets = GetConfusionSets();
 			var trainingCorpora = GetCorpora();
 			IPosTagger posTagger = new PosTagger();
-			contextSensitiveSpellingCorrection = new ContextSensitiveSpellingCorrection.ContextSensitiveSpellingCorrection(posTagger, trainingCorpora, confusionSets, false);
+			contextSensitiveSpellingCorrection = new ContextSensitiveSpellingCorrection.ContextSensitiveSpellingCorrection(posTagger, trainingCorpora, confusionSets, false, false);
 		}
 
 		private static IEnumerable<string[]> GetConfusionSets()

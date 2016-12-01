@@ -22,8 +22,8 @@ namespace ConsoleClient
 
 		private static void Main()
 		{
-			var confusionSets = GetConfusionSets();
-			var trainingCorpora = GetCorpora();
+			IEnumerable<string[]> confusionSets = GetConfusionSets();
+			IEnumerable<string> trainingCorpora = GetCorpora();
 
 			var testData = GetTestData()
 				.GroupBy(s => s.ConfusionSet)
@@ -38,24 +38,24 @@ namespace ConsoleClient
 					Prune, refreshXmlFiles);
 
 			Console.WriteLine("feature extraction + training took {0} Minutes", Stopwatch.Elapsed.TotalMinutes);
-			var totalWrongPredictions = 0;
+			int totalWrongPredictions = 0;
 
 			Console.WriteLine("Pruning:{0}", Prune ? "On" : "Off");
 
-			var csvPath = Path.Combine(SolutionPath, "Results.csv");
+			string csvPath = Path.Combine(SolutionPath, "Results.csv");
 
 			if (File.Exists(csvPath))
 				File.Delete(csvPath);
 
-			foreach (var set in testData.Keys)
+			foreach (string set in testData.Keys)
 			{
-				var wrongPredictions = 0;
+				int wrongPredictions = 0;
 
 				Parallel.For(0, testData[set].Length, i =>
 				{
-					var test = testData[set][i];
-					var wordsList = contextSensitiveSpellingCorrection.Predict(test.Sentence);
-					var correctAnswer = wordsList.Values.Contains(test.CorrectWord, StringComparer.OrdinalIgnoreCase);
+					TestCase test = testData[set][i];
+					Dictionary<int, string> wordsList = contextSensitiveSpellingCorrection.Predict(test.Sentence);
+					bool correctAnswer = wordsList.Values.Contains(test.CorrectWord, StringComparer.OrdinalIgnoreCase);
 
 					if (!correctAnswer)
 					{
@@ -74,8 +74,8 @@ namespace ConsoleClient
 
 		private static void WriteToCsv(string csvPath, string set, double wrongPredictions, int totalTestsCount)
 		{
-			var failures = 100 * (wrongPredictions / totalTestsCount);
-			var accuracy = 100 - failures;
+			double failures = 100 * (wrongPredictions / totalTestsCount);
+			double accuracy = 100 - failures;
 
 			using (var sw = new StreamWriter(csvPath, true))
 			{
@@ -85,7 +85,7 @@ namespace ConsoleClient
 
 		private static void DisplayStats(double wrongPredictions, double count)
 		{
-			var failures = 100 * (wrongPredictions / count);
+			double failures = 100 * (wrongPredictions / count);
 			Console.WriteLine("Accuracy: {0:00} % of {1} test samples, took: {2:00 Minutes}", 100 - failures, count,
 				Stopwatch.Elapsed.TotalMinutes);
 		}
@@ -129,7 +129,7 @@ namespace ConsoleClient
 
 		private static IEnumerable<string> GetCorpora()
 		{
-			var corpus = File
+			string corpus = File
 				.ReadAllText(Path.Combine(SolutionPath, @"Corpus\Release Corpus.txt"));
 
 			return corpus.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
@@ -140,17 +140,17 @@ namespace ConsoleClient
 			IEnumerable<string> lines = File.ReadAllText(Path.Combine(SolutionPath, @"Corpus\Test.txt"))
 				.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-			foreach (var line in lines)
+			foreach (string line in lines)
 			{
-				var pipeIdx = line.LastIndexOf('|');
-				var commaIdx = pipeIdx;
+				int pipeIdx = line.LastIndexOf('|');
+				int commaIdx = pipeIdx;
 				for (; commaIdx > -1; commaIdx--)
 					if (line[commaIdx] == ',')
 						break;
 
-				var sentence = line.Substring(0, commaIdx);
-				var correctWord = line.Substring(commaIdx + 1, pipeIdx - (commaIdx + 1));
-				var confusionSet = line.Substring(pipeIdx + 1);
+				string sentence = line.Substring(0, commaIdx);
+				string correctWord = line.Substring(commaIdx + 1, pipeIdx - (commaIdx + 1));
+				string confusionSet = line.Substring(pipeIdx + 1);
 
 				yield return new TestCase(sentence, correctWord, confusionSet);
 			}

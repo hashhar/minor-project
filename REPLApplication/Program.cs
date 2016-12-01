@@ -16,7 +16,7 @@ namespace REPLApplication
 
 		private static string ReturnNWord(int n, string str)
 		{
-			var words = str.Split(' ');
+			string[] words = str.Split(' ');
 			return words[n];
 		}
 
@@ -24,29 +24,29 @@ namespace REPLApplication
 		{
 			Console.WriteLine("Starting application. It may take some time to load dictionaries.");
 			var editCorrector = new Spelling();
-			var confusionSets = GetConfusionSets();
-			var trainingCorpora = GetCorpora();
+			IEnumerable<string[]> confusionSets = GetConfusionSets();
+			IEnumerable<string> trainingCorpora = GetCorpora();
 			IPosTagger posTagger = new PosTagger();
 			var contextSensitiveSpellingCorrection =
 				new ContextSensitiveSpellingCorrection.ContextSensitiveSpellingCorrection(posTagger, trainingCorpora, confusionSets,
-					false);
+					false, false);
 			Console.WriteLine("You can start now.");
 			while (true)
 			{
-				var testSentence = Console.ReadLine();
+				string testSentence = Console.ReadLine();
 				if (string.IsNullOrEmpty(testSentence))
 					return;
-				var defaultColor = Console.BackgroundColor;
+				ConsoleColor defaultColor = Console.BackgroundColor;
 				// Edit distance prediction
 				Dictionary<int, string> wordsList;
 				if (UseEditCorrection)
 				{
 					Console.WriteLine("EditCorrection: ");
 					Console.BackgroundColor = ConsoleColor.DarkGreen;
-					var editCorrectedSentence = testSentence;
-					foreach (var item in testSentence.Split(' '))
+					string editCorrectedSentence = testSentence;
+					foreach (string item in testSentence.Split(' '))
 					{
-						var correctedItem = editCorrector.Correct(item);
+						string correctedItem = editCorrector.Correct(item);
 						if (correctedItem != item.ToLower())
 							Console.WriteLine(item + " : " + correctedItem);
 						editCorrectedSentence = editCorrectedSentence.Replace(item, correctedItem);
@@ -54,28 +54,28 @@ namespace REPLApplication
 					Console.WriteLine(editCorrectedSentence);
 
 					// Context + EditCorrection Prediction
-					var contextEditCorrectedSentence = editCorrectedSentence;
+					string contextEditCorrectedSentence = editCorrectedSentence;
 					wordsList = contextSensitiveSpellingCorrection.Predict(contextEditCorrectedSentence);
 					Console.BackgroundColor = defaultColor;
 					Console.WriteLine("EditCorrection + ContextCorrection: ");
 					Console.BackgroundColor = ConsoleColor.DarkCyan;
-					foreach (var word in wordsList)
+					foreach (KeyValuePair<int, string> word in wordsList)
 					{
-						var wrongWord = ReturnNWord(word.Key, editCorrectedSentence);
+						string wrongWord = ReturnNWord(word.Key, editCorrectedSentence);
 						Console.WriteLine(wrongWord + " : " + word.Value);
 						contextEditCorrectedSentence = contextEditCorrectedSentence.Replace(wrongWord, word.Value);
 					}
 					Console.WriteLine(contextEditCorrectedSentence);
 				}
 				// Context Prediction
-				var contextCorrectedSentence = testSentence;
+				string contextCorrectedSentence = testSentence;
 				wordsList = contextSensitiveSpellingCorrection.Predict(contextCorrectedSentence);
 				Console.BackgroundColor = defaultColor;
 				Console.WriteLine("Context Correction: ");
 				Console.BackgroundColor = ConsoleColor.DarkCyan;
-				foreach (var word in wordsList)
+				foreach (KeyValuePair<int, string> word in wordsList)
 				{
-					var wrongWord = ReturnNWord(word.Key, contextCorrectedSentence);
+					string wrongWord = ReturnNWord(word.Key, contextCorrectedSentence);
 					Console.WriteLine(wrongWord + " : " + word.Value);
 					contextCorrectedSentence = contextCorrectedSentence.Replace(wrongWord, word.Value);
 				}
@@ -122,7 +122,7 @@ namespace REPLApplication
 
 		private static IEnumerable<string> GetCorpora()
 		{
-			var corpus = File.ReadAllText(Path.Combine(SolutionPath, @"Corpus\Release Corpus.txt"));
+			string corpus = File.ReadAllText(Path.Combine(SolutionPath, @"Corpus\Release Corpus.txt"));
 			return corpus.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 		}
 	}
