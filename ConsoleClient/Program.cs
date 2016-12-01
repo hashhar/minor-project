@@ -16,6 +16,7 @@ namespace ConsoleClient
 		private static readonly bool Prune = ConfigurationManager.AppSettings.Get("pruning").ToLower() == "true";
 		private static readonly string SolutionPath =
 			ContextSensitiveSpellingCorrection.ContextSensitiveSpellingCorrection.SolutionPath;
+		private static readonly bool refreshXmlFiles = ConfigurationManager.AppSettings.Get("refreshXmlFiles").ToLower() == "true";
 
 		private static readonly Stopwatch Stopwatch = new Stopwatch();
 
@@ -34,7 +35,7 @@ namespace ConsoleClient
 
 			var contextSensitiveSpellingCorrection =
 				new ContextSensitiveSpellingCorrection.ContextSensitiveSpellingCorrection(posTagger, trainingCorpora, confusionSets,
-					Prune);
+					Prune, refreshXmlFiles);
 
 			Console.WriteLine("feature extraction + training took {0} Minutes", Stopwatch.Elapsed.TotalMinutes);
 			var totalWrongPredictions = 0;

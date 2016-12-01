@@ -15,6 +15,7 @@ using FeatureSelector.Abstract;
 using FeatureSelector.Concrete;
 using FeatureSelector.Models;
 using Winnow;
+using System.Configuration;
 
 namespace ContextSensitiveSpellingCorrection
 {
@@ -37,7 +38,7 @@ namespace ContextSensitiveSpellingCorrection
 		private readonly StatsHelper _statsHelper;
 
 		public ContextSensitiveSpellingCorrection(IPosTagger posTagger, IEnumerable<string> corpora,
-			IEnumerable<string[]> confusionSetsEnumerator, bool prune)
+			IEnumerable<string[]> confusionSetsEnumerator, bool prune, bool refreshXmlFiles)
 		{
 			_posTagger = posTagger;
 			_contextFeaturesExtractor = new ContextFeaturesExtractor(K);
@@ -57,7 +58,7 @@ namespace ContextSensitiveSpellingCorrection
 					Console.WriteLine("Deserialize complete");
 				}
 			}
-			else if(!File.Exists(SentenceXml))
+			else if(!File.Exists(SentenceXml) || refreshXmlFiles)
 			{
 				sentences = PreProcessCorpora(corpora).ToArray();
 
@@ -81,7 +82,7 @@ namespace ContextSensitiveSpellingCorrection
 					_comparators = (IList<Comparator>) serializer.ReadObject(reader);
 				}
 			}
-			else
+			else if (!File.Exists(TrainedXml) || refreshXmlFiles)
 			{
 				Parallel.ForEach(confusionSets, confusionSet =>
 				{
