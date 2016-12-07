@@ -75,7 +75,7 @@ namespace ContextSensitiveSpellingCorrection
 				featureFrequencies = _statsHelper.GetFrequencies(sentences);
 
 			var serializer = new DataContractSerializer(_comparators.GetType());
-			if (File.Exists(TrainedXml))
+			if (File.Exists(TrainedXml) && !refreshXmlFiles)
 			{
 				using (var reader = new XmlTextReader(TrainedXml))
 				{
