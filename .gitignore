@@ -1,3 +1,5 @@
+Models/Sentence.xml
+
 # ===== Global/VisualStudioCode.gitignore ===== #
 .vscode/*
 !.vscode/settings.json
